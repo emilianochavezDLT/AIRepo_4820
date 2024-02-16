@@ -100,10 +100,53 @@ def BD(inital_Node, goal_Node, successors):
     '''
     For our goaltest/goal_node has found a solution when we found an intersection 
     between the two sets/frontiers.
-
     '''
+
+    if inital_Node == goal_Node:
+        return inital_Node
     
+    # Create the frontier and explored set for the inital_Node
+    frontier_inital = deque([inital_Node])
+    #Keep track of the nodes that have been explored
+    explored_inital = set()
+
+    # Create the frontier and explored set for the goal_Node
+    frontier_goal = deque([goal_Node])
+    #Keep track of the nodes that have been explored
+    explored_goal = set()
+    
+
+
+    # While the frontiers are not empty
     return None
+
+
+
+
+
+'''
+#testing bfs
+# Define a simple graph as a dictionary
+graph1 = {
+    'A': ['B', 'C'],
+    'B': ['A', 'D', 'E'],
+    'C': ['A', 'F'],
+    'D': ['B'],
+    'E': ['B', 'F'],
+    'F': ['C', 'E'],
+}
+
+
+# Define a successors function for this graph
+def get_successors(node):
+    children = graph1.get(node)
+    return children 
+
+# Test the graphSearch function with BFS
+print("Path from A to F:", graphSearch('A', 'F', get_successors, 'bfs'))
+print("Path from A to A:", graphSearch('A', 'A', get_successors, 'bfs'))
+print("Path from A to G:", graphSearch('A', 'G', get_successors, 'bfs'))  # G is not in the graph
+'''
     
     
     
