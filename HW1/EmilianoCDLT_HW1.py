@@ -91,6 +91,11 @@ def IDS(inital_Node, goal_Node, successors):
         result = DFS(inital_Node, goal_Node, successors, depth)
         if result is not None:
             return result
+    return None
+
+#Bidirectional Search
+def BD(inital_Node, goal_Node, successors):
+    
     
     
 
