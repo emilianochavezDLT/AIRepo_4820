@@ -94,7 +94,16 @@ def IDS(inital_Node, goal_Node, successors):
     return None
 
 #Bidirectional Search
+#Pseudocode reference was from Russell and Norvig's book Pg. 91
 def BD(inital_Node, goal_Node, successors):
+
+    '''
+    For our goaltest/goal_node has found a solution when we found an intersection 
+    between the two sets/frontiers.
+
+    '''
+    
+    return None
     
     
     
