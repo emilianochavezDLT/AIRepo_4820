@@ -95,30 +95,40 @@ def IDS(inital_Node, goal_Node, successors):
 
 #Bidirectional Search
 #Pseudocode reference was from Russell and Norvig's book Pg. 91
-def BD(inital_Node, goal_Node, successors):
+def BD(initial_Node, goal_Node, successors):
+    if initial_Node == goal_Node:
+        return initial_Node
 
-    '''
-    For our goaltest/goal_node has found a solution when we found an intersection 
-    between the two sets/frontiers.
-    '''
-
-    if inital_Node == goal_Node:
-        return inital_Node
-    
-    # Create the frontier and explored set for the inital_Node
-    frontier_inital = deque([inital_Node])
-    #Keep track of the nodes that have been explored
-    explored_inital = set()
+    # Create the frontier and explored set for the initial_Node
+    frontier_initial = deque([initial_Node])
+    explored_initial = set()
 
     # Create the frontier and explored set for the goal_Node
     frontier_goal = deque([goal_Node])
-    #Keep track of the nodes that have been explored
     explored_goal = set()
-    
 
+    while frontier_initial and frontier_goal:
+        # Run BFS from initial_Node
+        node_initial = BFS(frontier_initial[0], goal_Node, successors)
+        if node_initial is not None:
+            return node_initial
+        frontier_initial.popleft()
+        explored_initial.add(node_initial)
 
-    # While the frontiers are not empty
+        # Run BFS from goal_Node
+        node_goal = BFS(frontier_goal[0], initial_Node, successors)
+        if node_goal is not None:
+            return node_goal
+        frontier_goal.popleft()
+        explored_goal.add(node_goal)
+
     return None
+
+
+
+
+
+
 
 
 
