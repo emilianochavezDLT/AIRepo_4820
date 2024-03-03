@@ -15,14 +15,10 @@ The goal state is:
 #Lets first represent the board as a list of lists
 
 goal_board = [[1, 2, 3], [4, 5, 6], [7, 8, 0]]
-#rows             0            1           2
+#rows             0th       1st        2nd
 
 intial_board = [[1, 2, 3], [4, 5, 6], [7, 0, 8]]
-#rows               0            1           2
-
-
-
-
+#rows               0th        1st         2nd
 
 
 '''
@@ -39,11 +35,54 @@ def move_up(board):
                 if i == 0: # If the blank tile is in the top row
                     return None #Cannot move up because this is an invalid move
                 else:
-                    temp = board[i][j] #Swap the blank tile with the tile above it
-                    board[i][j] = board[i-1][j] #Move the tile above the blank tile
-                    board[i-1][j] = temp #Move the blank tile to the top
-                    return board #Return the new board
+                    new_board = [x[:] for x in board] #Create a new board
+                    new_board[i][j] = new_board[i-1][j] #Move the tile above the blank tile
+                    new_board[i-1][j] = 0 #Move the blank tile to the top
+                    return new_board #Return the new board
     return None
 
+def move_down(board):
+    rows = len(board)
+    cols = len(board[0]) if rows > 0 else 0
+    for i in range(rows):
+        for j in range(cols): 
+            if board[i][j] == 0: 
+                if i == rows-1: # If the blank tile is in the bottom row
+                    return None 
+                else:
+                    new_board = [x[:] for x in board] 
+                    new_board[i][j] = new_board[i+1][j] #Move the tile below the blank tile
+                    new_board[i+1][j] = 0 #Move the blank tile to the bottom
+                    return new_board 
+    return None
 
+def move_left(board):
+    rows = len(board)
+    cols = len(board[0]) if rows > 0 else 0
+    for i in range(rows): 
+        for j in range(cols):
+            if board[i][j] == 0: 
+                if j == 0: # If the blank tile is in the leftmost column
+                    return None 
+                else:
+                   new_board = [x[:] for x in board] 
+                   new_board[i][j] = new_board[i][j-1] #Move the tile to the left of the blank tile
+                   new_board[i][j-1] = 0  #Move the blank tile to the left
+                   return new_board 
+    return None
+
+def move_right(board):
+    rows = len(board)
+    cols = len(board[0]) if rows > 0 else 0
+    for i in range(rows): 
+        for j in range(cols): 
+            if board[i][j] == 0:
+                if j == cols-1: # If the blank tile is in the rightmost column
+                    return None 
+                else:
+                    new_board = [x[:] for x in board] 
+                    new_board[i][j] = new_board[i][j+1] #Move the tile to the right of the blank tile
+                    new_board[i][j+1] = 0 #Move the blank tile to the right
+                    return new_board
+    return None
 
