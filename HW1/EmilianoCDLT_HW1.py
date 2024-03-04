@@ -3,6 +3,8 @@
 #source for deque and collections library: https://docs.python.org/3/library/collections.html#collections.deque
 from collections import deque
 
+
+
 def graphSearch(inital_Node, goal_Node, successors, search_strategy):
     if search_strategy == 'bfs':
         return BFS(inital_Node, goal_Node, successors)
@@ -179,11 +181,12 @@ def BD(initial_Node, goal_Node, successors):
 
 
 def successors(node):
-    moves = [move_up, move_down, move_left, move_right]
+    moves = [move_up, move_down, move_left, move_right] #List of moves that can be made
     successors_states = []
     for move in moves:
-        new_state = move(node)
-        if new_state is not None:
+        new_state = move(node) #Get the new state after making the move
+        #If the new state is not None, add it to the list of successors
+        if new_state is not None: 
             successors_states.append(new_state)
     return successors_states
 
@@ -259,23 +262,17 @@ def move_right(board):
                     return tuple(tuple(row) for row in new_board) #Return the new board
     return None
 
-
-''' Implmenting the solve function for the n_puzzle problem
-********************************************************************
-'''
-
-
 '''
 This is the n_puzzle problem where we are given a board of
 size 8 and we have to move the tiles to reach the goal state
 
 The goal state is:
- 1 2 3  or  0 1 2
- 4 5 6      3 4 5
- 7 8 0      6 7 8
+ 1 2 3 
+ 4 5 6 
+ 7 8 0 
 ''' 
 
-
+'''
 def nPuzzle(n, initial_board):
     # Create the goal state for an n-puzzle
     goal_board = [tuple(range(i*n + 1, (i+1)*n + 1)) for i in range(n)]
@@ -283,15 +280,96 @@ def nPuzzle(n, initial_board):
     goal_board = tuple(goal_board)  # Convert the list of tuples to a tuple of tuples
     
     result = graphSearch(initial_board, goal_board, successors, 'bfs')
-    print("BFS: ", result)
+    print("BFS Result: ", result)
     result = graphSearch(initial_board, goal_board, successors, 'dfs')
-    print("DFS: ", result)
+    print("DFS Result: ", result)
     result = graphSearch(initial_board, goal_board, successors, 'id')
-    print("IDS: ", result)
+    print("IDS Result: ", result)
     result = graphSearch(initial_board, goal_board, successors, 'bd')
-    print("BD: ", result)
+    print("BD Result: ", result)
 
 
 initial_board = ((1, 2, 3), (4, 5, 6), (7, 8, 0))
 #rows               0th        1st         2nd
 nPuzzle(3, initial_board)
+'''
+
+''' 
+********************************************************************
+'''
+
+
+
+
+''' The n_queens problem 
+********************************************************************
+'''
+'''
+The Rules of the n-queens problem are:
+
+1: No two queens can be in the same row
+2: No two queens can be in the same column
+3: No two queens can be in the same diagonal
+
+This is a 4x4 board
+    0 1 2 3
+    
+    0 Q . . .
+    1 . . Q .
+    2 . . . Q
+    3 . Q . .
+
+The goal is to place the queens in such a way that no two queens are attacking each other
+
+The 4x4 Goal state is:
+
+    0 1 2 3
+
+    0 . Q . .
+    1 . . . Q
+    2 Q . . .
+    3 . . Q .
+
+'''
+
+
+def nQueens(n, initial_state):
+    if n == 1:
+        return initial_state
+    if n == 2 or n == 3:
+        print("No solution exists")
+    
+    result = graphSearch(initial_state, n, n_queens_successors, 'bfs')
+    print("BFS Result: ", result)
+    result = graphSearch(initial_state, n, n_queens_successors, 'dfs')
+    print("DFS Result: ", result)
+    result = graphSearch(initial_state, n, n_queens_successors, 'id')
+    print("IDS Result: ", result)
+    result = graphSearch(initial_state, n, n_queens_successors, 'bd')
+    print("BD Result: ", result)
+    
+
+
+
+
+#This is function is will return a boolean value to check 
+#whether a queen is safe 
+def is_safe(board, row, col):
+    for i in range(row):
+        if board[i] == col or abs(board[i] - col) == abs(i - row):
+            return False
+    return True
+
+
+n_queens_initial_board = ((1, 0, 0, 0), (1, 0, 0, 0), (1, 0, 0, 0), (1, 0, 0, 0))
+#rows               0th        1st         2nd
+
+
+
+
+nQueens(4, initial_state)
+
+'''
+********************************************************************
+'''
+
