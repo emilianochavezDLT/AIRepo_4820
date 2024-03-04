@@ -375,10 +375,12 @@ def BFS_queens(inital_Node, goal_Node, successors):
         children = successors(node)
         
         for child in children:
-            print("Child: ", child)
+            cost += 1
             # Convert child to tuple of tuples for set operations
             child_tuple = tuple(tuple(row) for row in child)
             if child_tuple not in frontier and child_tuple not in explored:
+                print("Child: ", child)
+                
                 # If the child is the goal_Node, return the child
                 if is_goal(child):
                     print_BFS_Cost(cost)
@@ -535,28 +537,31 @@ def is_safe(board, row, col):
 
     # Check the column
     for i in range(n):
-        if board[i][col] == 1:
+        if i != row and board[i][col] == 1:
             return False
+
 
     # Check upper diagonal on the left side
-    for i, j in zip(range(row, -1, -1), range(col, -1, -1)):
-        if board[i][j] == 1:
-            return False
-
-    # Check lower diagonal on the left side
-    for i, j in zip(range(row, n, 1), range(col, -1, -1)):
+    for i, j in zip(range(row-1, -1, -1), range(col-1, -1, -1)):
         if board[i][j] == 1:
             return False
 
     # Check upper diagonal on the right side
-    for i, j in zip(range(row, -1, -1), range(col, n)):
-        if i < n and j < n and board[i][j] == 1:
+    for i, j in zip(range(row-1, -1, -1), range(col+1, n)):
+        if board[i][j] == 1:
+            return False
+
+
+    # Check lower diagonal on the left side
+    for i, j in zip(range(row + 1, n), range(col - 1, -1, -1)):
+        if board[i][j] == 1:
             return False
 
     # Check lower diagonal on the right side
-    for i, j in zip(range(row, n, 1), range(col, n)):
-        if i < n and j < n and board[i][j] == 1:
+    for i, j in zip(range(row + 1, n), range(col + 1, n)):
+        if board[i][j] == 1:
             return False
+
 
     return True
 
@@ -582,12 +587,29 @@ def n_queens_initial_board(n):
     # Initialize an n x n board with all 0s (no queens placed)
     return [[0 for _ in range(n)] for _ in range(n)]
 
-
 def is_goal(board):
     n = len(board)
     num_queens = sum(sum(row) for row in board)
-    return num_queens == n and all(all(is_safe(board, i, j) if board[i][j] == 1 else True for j in range(n)) for i in range(n))
 
+    # Check if there are exactly n queens on the board
+    if num_queens != n:
+        print("Failing at queen count check")
+        return False
+
+    # Check if all queens are placed safely
+    for i in range(n):
+        for j in range(n):
+            if board[i][j] == 1:
+                if not is_safe(board, i, j):
+                    print(f"Failing at safety check for queen at ({i}, {j})")
+                    return False
+
+    return True
+
+
+
+known_solution = [[1, 0, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1], [0, 1, 0, 0]]  # Example solution
+print(is_goal(known_solution))  # Should print True
 
 
 initial_board = n_queens_initial_board(4)
