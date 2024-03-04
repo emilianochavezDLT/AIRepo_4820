@@ -332,20 +332,191 @@ The 4x4 Goal state is:
 
 '''
 
+def graphSearch_queens(inital_Node, goal_Node, successors, search_strategy):
+    if search_strategy == 'bfs':
+        return BFS_queens(inital_Node, goal_Node, successors)
+    elif search_strategy == 'dfs':
+        return DFS_queens(inital_Node, goal_Node, successors)
+    elif search_strategy == 'id':
+        return IDS_queens(inital_Node, goal_Node, successors)
+    elif search_strategy == 'bd':
+        return BD_queens(inital_Node, goal_Node, successors)
+    else:
+        return None
+
+
+def print_BFS_Cost(cost):
+    print("\nBreadth-First Search Cost:" , cost)   
+
+# Breadth-First Search
+#Pseudocode reference was from Russell and Norvig's book Pg. 82
+def BFS_queens(inital_Node, goal_Node, successors):
+    
+    cost = 0
+    
+    # Create the frontier and explored set
+    frontier = deque([inital_Node])
+    explored = set()
+    
+    # While the frontier is not empty
+    while frontier:
+        # Pop the first element of the frontier
+        node = frontier.popleft()
+        
+        if is_goal(node):
+            print_BFS_Cost(cost)
+            return node
+        
+        
+        # Convert node to tuple of tuples for set operations
+        node_tuple = tuple(tuple(row) for row in node)
+        explored.add(node_tuple)
+        
+        children = successors(node)
+        
+        for child in children:
+            print("Child: ", child)
+            # Convert child to tuple of tuples for set operations
+            child_tuple = tuple(tuple(row) for row in child)
+            if child_tuple not in frontier and child_tuple not in explored:
+                # If the child is the goal_Node, return the child
+                if is_goal(child):
+                    print_BFS_Cost(cost)
+                    return child
+                else:
+                    # Add the child to the frontier
+                    frontier.append(child)
+    
+    return None
+                
+
+def print_DFS_Cost(cost):
+    print("\nDepth-First Search Cost:" , cost)
+
+
+#Depth-First Search
+#So this is DFS without a cutoff, so it will run until the goal is found or no more nodes are left
+#Pseudocode reference was from Russell and Norvig's book Pg. 88, which I modified to be without a cutoff
+#This can go into an infinite loop if the graph is infinite
+def DFS_queens(inital_Node, goal_Node, successors):
+    
+    cost = 0
+    explored = set() #Create an empty set to store the explored nodes
+    stack = deque([inital_Node]) #Create a stack with the inital_Node
+
+    while stack: 
+        node = stack.pop() #Pop the last element of the stack
+
+        if node == goal_Node:
+            print_DFS_Cost(cost)
+            return node
+        
+        explored.add(node) #Add the node to the explored set
+        children = successors(node) #Get the children of the node
+        for child in children: 
+            cost += 1
+            #If the child is not in the explored set or the stack
+            if child not in explored and child not in stack: 
+                #If the child is the goal_Node, return the child
+                stack.append(child)
+
+    return None
+    
+
+def print_IDS_Cost(cost):
+    print("\nIterative Deepening Search Cost:" , cost)
+
+#Iterative Deepening Search Russell and Norvig's book Pg. 88
+def IDS_queens(inital_Node, goal_Node, successors):
+    for depth in range(0, 1000):
+        result = DLS_queens(inital_Node, goal_Node, successors, depth)
+        if result is not None:
+            return result
+    return None
+
+
+#Depth-Limited Search from 
+def DLS_queens(inital_Node, goal_Node, successors, depth):
+    cost = 0
+    explored = set() #Create an empty set to store the explored nodes
+    stack = deque([inital_Node]) #Create a stack with the inital_Node
+    while stack:
+        node = stack.pop() #Pop the last element of the stack and assign it to node
+        if node == goal_Node: #If the node is the goal_Node, return the node
+            print_IDS_Cost(cost)
+            return node
+        if depth == 0: #If the depth is 0, continue
+            continue
+        explored.add(node) #Add the node to the explored set
+        children = successors(node) 
+        for child in children:
+            cost += 1
+            #If the child is not in the explored set or the stack
+            if child not in explored and child not in stack:
+                stack.append(child) #Add the child to the stack
+    return None
+
+
+def print_BD_Cost(cost):
+    print("\nBi-directional Cost:" , cost)
+
+#Bidirectional Search
+#Pseudocode reference was from Russell and Norvig's book Pg. 91
+def BD_queens(initial_Node, goal_Node, successors):
+    cost = 0
+    if initial_Node == goal_Node:
+        print_BD_Cost(cost)
+        return initial_Node
+
+    # Create the frontier and explored set for the initial_Node
+    frontier_initial = deque([initial_Node])
+    explored_initial = set([initial_Node])
+
+    # Create the frontier and explored set for the goal_Node
+    frontier_goal = deque([goal_Node])
+    explored_goal = set([goal_Node])
+
+    while frontier_initial and frontier_goal:
+        # Expand from initial_Node
+        node_initial = frontier_initial.popleft()
+        for child in successors(node_initial):
+            cost += 1
+            if child in explored_goal:
+                print_BD_Cost(cost)
+                print("The intersection is: ", child)
+                return child #Found the intersection, Hallelujah
+            if child not in explored_initial:
+                frontier_initial.append(child)
+                explored_initial.add(child)
+
+        # Expand from goal_Node
+        node_goal = frontier_goal.popleft()
+        for child in successors(node_goal):
+            if child in explored_initial:
+                print_BD_Cost(cost)
+                print("The intersection is: ", child)
+                return child #Found the intersection, Hallelujah
+            if child not in explored_goal:
+                frontier_goal.append(child)
+                explored_goal.add(child)
+
+    return None
+
+
 
 def nQueens(n, initial_state):
     if n == 1:
         return initial_state
     if n == 2 or n == 3:
         print("No solution exists")
-    
-    result = graphSearch(initial_state, n, n_queens_successors, 'bfs')
+
+    result = graphSearch_queens(initial_state, True, n_queens_successors, 'bfs')
     print("BFS Result: ", result)
-    result = graphSearch(initial_state, n, n_queens_successors, 'dfs')
+    result = graphSearch_queens(initial_state, True, n_queens_successors, 'dfs')
     print("DFS Result: ", result)
-    result = graphSearch(initial_state, n, n_queens_successors, 'id')
+    result = graphSearch_queens(initial_state, True, n_queens_successors, 'id')
     print("IDS Result: ", result)
-    result = graphSearch(initial_state, n, n_queens_successors, 'bd')
+    result = graphSearch_queens(initial_state, True, n_queens_successors, 'bd')
     print("BD Result: ", result)
     
 
@@ -355,19 +526,73 @@ def nQueens(n, initial_state):
 #This is function is will return a boolean value to check 
 #whether a queen is safe 
 def is_safe(board, row, col):
-    for i in range(row):
-        if board[i] == col or abs(board[i] - col) == abs(i - row):
+    n = len(board)
+
+    # Check the row on the left side
+    for i in range(col):
+        if board[row][i] == 1:
             return False
+
+    # Check the column
+    for i in range(n):
+        if board[i][col] == 1:
+            return False
+
+    # Check upper diagonal on the left side
+    for i, j in zip(range(row, -1, -1), range(col, -1, -1)):
+        if board[i][j] == 1:
+            return False
+
+    # Check lower diagonal on the left side
+    for i, j in zip(range(row, n, 1), range(col, -1, -1)):
+        if board[i][j] == 1:
+            return False
+
+    # Check upper diagonal on the right side
+    for i, j in zip(range(row, -1, -1), range(col, n)):
+        if i < n and j < n and board[i][j] == 1:
+            return False
+
+    # Check lower diagonal on the right side
+    for i, j in zip(range(row, n, 1), range(col, n)):
+        if i < n and j < n and board[i][j] == 1:
+            return False
+
     return True
 
+def n_queens_successors(board):
+    n = len(board)
+    row = next((i for i, row in enumerate(board) if sum(row) == 0), None)
+    
+    if row is None:
+        # All rows are filled; no successors
+        return []
 
-n_queens_initial_board = ((1, 0, 0, 0), (1, 0, 0, 0), (1, 0, 0, 0), (1, 0, 0, 0))
-#rows               0th        1st         2nd
+    successors = []
+    for col in range(n):
+        if is_safe(board, row, col):
+            new_board = [r[:] for r in board]  # Create a copy of the board
+            new_board[row][col] = 1  # Place a queen
+            successors.append(new_board)
+
+    return successors
+
+
+def n_queens_initial_board(n):
+    # Initialize an n x n board with all 0s (no queens placed)
+    return [[0 for _ in range(n)] for _ in range(n)]
+
+
+def is_goal(board):
+    n = len(board)
+    num_queens = sum(sum(row) for row in board)
+    return num_queens == n and all(all(is_safe(board, i, j) if board[i][j] == 1 else True for j in range(n)) for i in range(n))
 
 
 
+initial_board = n_queens_initial_board(4)
 
-nQueens(4, initial_state)
+nQueens(4, initial_board)
 
 '''
 ********************************************************************
