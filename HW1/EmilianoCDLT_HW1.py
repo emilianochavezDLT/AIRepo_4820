@@ -332,15 +332,15 @@ The 4x4 Goal state is:
 
 '''
 
-def graphSearch_queens(inital_Node, goal_Node, successors, search_strategy):
+def graphSearch_queens(inital_Node, goal_state, successors, search_strategy):
     if search_strategy == 'bfs':
-        return BFS_queens(inital_Node, goal_Node, successors)
+        return BFS_queens(inital_Node, goal_state, successors)
     elif search_strategy == 'dfs':
-        return DFS_queens(inital_Node, goal_Node, successors)
+        return DFS_queens(inital_Node, goal_state, successors)
     elif search_strategy == 'id':
-        return IDS_queens(inital_Node, goal_Node, successors)
+        return IDS_queens(inital_Node, goal_state, successors)
     elif search_strategy == 'bd':
-        return BD_queens(inital_Node, goal_Node, successors)
+        return BD_queens(inital_Node, goal_state, successors)
     else:
         return None
 
@@ -350,45 +350,30 @@ def print_BFS_Cost(cost):
 
 # Breadth-First Search
 #Pseudocode reference was from Russell and Norvig's book Pg. 82
-def BFS_queens(inital_Node, goal_Node, successors):
-    
+def BFS_queens(inital_Node, goal_state,successors):
     cost = 0
-    
-    # Create the frontier and explored set
+    if goal_state(inital_Node):
+        print_BFS_Cost(cost)
+        return inital_Node
+
     frontier = deque([inital_Node])
     explored = set()
-    
-    # While the frontier is not empty
+
     while frontier:
-        # Pop the first element of the frontier
         node = frontier.popleft()
         
-        if is_goal(node):
+        if goal_state(node):
             print_BFS_Cost(cost)
             return node
-        
-        
-        # Convert node to tuple of tuples for set operations
-        node_tuple = tuple(tuple(row) for row in node)
-        explored.add(node_tuple)
-        
+
+        explored.add(tuple(node))
         children = successors(node)
-        
+
         for child in children:
             cost += 1
-            # Convert child to tuple of tuples for set operations
-            child_tuple = tuple(tuple(row) for row in child)
-            if child_tuple not in frontier and child_tuple not in explored:
-                print("Child: ", child)
-                
-                # If the child is the goal_Node, return the child
-                if is_goal(child):
-                    print_BFS_Cost(cost)
-                    return child
-                else:
-                    # Add the child to the frontier
-                    frontier.append(child)
-    
+            if child not in frontier and tuple(child) not in explored:
+                frontier.append(child)
+
     return None
                 
 
@@ -512,7 +497,7 @@ def nQueens(n, initial_state):
     if n == 2 or n == 3:
         print("No solution exists")
 
-    result = graphSearch_queens(initial_state, True, n_queens_successors, 'bfs')
+    result = graphSearch_queens(initial_state, is_goal_state, n_queens_successors, 'bfs')
     print("BFS Result: ", result)
     result = graphSearch_queens(initial_state, True, n_queens_successors, 'dfs')
     print("DFS Result: ", result)
@@ -522,97 +507,51 @@ def nQueens(n, initial_state):
     print("BD Result: ", result)
     
 
+def nqueens_initial_board(n):
+    return (-1,) * n  # Tuple of -1s, one for each row
 
-
-
-#This is function is will return a boolean value to check 
-#whether a queen is safe 
-def is_safe(board, row, col):
-    n = len(board)
-
-    # Check the row on the left side
-    for i in range(col):
-        if board[row][i] == 1:
-            return False
-
-    # Check the column
-    for i in range(n):
-        if i != row and board[i][col] == 1:
-            return False
-
-
-    # Check upper diagonal on the left side
-    for i, j in zip(range(row-1, -1, -1), range(col-1, -1, -1)):
-        if board[i][j] == 1:
-            return False
-
-    # Check upper diagonal on the right side
-    for i, j in zip(range(row-1, -1, -1), range(col+1, n)):
-        if board[i][j] == 1:
-            return False
-
-
-    # Check lower diagonal on the left side
-    for i, j in zip(range(row + 1, n), range(col - 1, -1, -1)):
-        if board[i][j] == 1:
-            return False
-
-    # Check lower diagonal on the right side
-    for i, j in zip(range(row + 1, n), range(col + 1, n)):
-        if board[i][j] == 1:
-            return False
-
-
-    return True
-
-def n_queens_successors(board):
-    n = len(board)
-    row = next((i for i, row in enumerate(board) if sum(row) == 0), None)
-    
-    if row is None:
-        # All rows are filled; no successors
-        return []
-
+def n_queens_successors(state):
+    n = len(state)
     successors = []
+    
+    # Check if all queens are already placed
+    if -1 not in state:
+        return successors  # No more successors as all queens are placed
+
+    # Find the next row to place a queen
+    next_row = state.index(-1)
+    
     for col in range(n):
-        if is_safe(board, row, col):
-            new_board = [r[:] for r in board]  # Create a copy of the board
-            new_board[row][col] = 1  # Place a queen
-            successors.append(new_board)
+        if is_safe(state, next_row, col):
+            new_state = list(state)
+            new_state[next_row] = col
+            successors.append(tuple(new_state))  # Convert list back to tuple
 
     return successors
 
 
-def n_queens_initial_board(n):
-    # Initialize an n x n board with all 0s (no queens placed)
-    return [[0 for _ in range(n)] for _ in range(n)]
+def is_safe(state, row, col):
+    for r in range(row):
+        if state[r] == col or \
+           state[r] - r == col - row or \
+           state[r] + r == col + row:
+            return False
+    return True
 
-def is_goal(board):
-    n = len(board)
-    num_queens = sum(sum(row) for row in board)
+def is_goal_state(state):
+    """Check if all queens are placed and the state is safe."""
+    return -1 not in state and is_safe_state(state)
 
-    # Check if there are exactly n queens on the board
-    if num_queens != n:
-        print("Failing at queen count check")
-        return False
-
-    # Check if all queens are placed safely
-    for i in range(n):
-        for j in range(n):
-            if board[i][j] == 1:
-                if not is_safe(board, i, j):
-                    print(f"Failing at safety check for queen at ({i}, {j})")
-                    return False
-
+def is_safe_state(state):
+    """Check if the entire state is safe."""
+    n = len(state)
+    for row in range(n):
+        if not is_safe(state, row, state[row]):
+            return False
     return True
 
 
-
-known_solution = [[1, 0, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1], [0, 1, 0, 0]]  # Example solution
-print(is_goal(known_solution))  # Should print True
-
-
-initial_board = n_queens_initial_board(4)
+initial_board = nqueens_initial_board(4)
 
 nQueens(4, initial_board)
 
