@@ -1,8 +1,9 @@
 #Emiliano Chavez De La Torre
+#CS 4820
 
 #source for deque and collections library: https://docs.python.org/3/library/collections.html#collections.deque
 from collections import deque
-import random
+
 
 
 
@@ -162,18 +163,18 @@ def BD(initial_Node, goal_Node, successors):
             if child in explored_goal:
                 print_BD_Cost(cost)
                 print("The intersection is: ", child)
-                return child #Found the intersection, Hallelujah
+                return child #Found the intersection
             if child not in explored_initial:
                 frontier_initial.append(child)
                 explored_initial.add(child)
 
-        # Expand from goal_Node
+        #Expand from goal_Node
         node_goal = frontier_goal.popleft()
         for child in successors(node_goal):
             if child in explored_initial:
                 print_BD_Cost(cost)
                 print("The intersection is: ", child)
-                return child #Found the intersection, Hallelujah
+                return child #Found the intersection
             if child not in explored_goal:
                 frontier_goal.append(child)
                 explored_goal.add(child)
@@ -519,35 +520,57 @@ def nQueens(n, initial_state):
     if n == 2 or n == 3:
         print("No solution exists")
 
+    def create_board(state):
+        board = []
+        for row in range(n):
+            board.append(['.'] * n)
+            for col in range(n):
+                if state[row] == col:
+                    board[row][col] = 'Q'
+        return board
+
+    def print_board(board):
+        for row in board:
+            print(' '.join(row))
+        print()
+    
     result = graphSearch_queens(initial_state, is_goal_state, n_queens_successors, 'bfs')
     print("BFS Result: ", result)
+    print("BFS Board: ")
+    print_board(create_board(result))
     result = graphSearch_queens(initial_state, is_goal_state, n_queens_successors, 'dfs')
     print("DFS Result: ", result)
+    print("DFS Board: ")
+    print_board(create_board(result))
     result = graphSearch_queens(initial_state, is_goal_state, n_queens_successors, 'id')
     print("IDS Result: ", result)
+    print("IDS Board: ")
+    print_board(create_board(result))
     result = graphSearch_queens(initial_state, is_goal_state, n_queens_successors, 'bd')
     print("BD Result: ", result)
+    print("BD Board: ")
+    print_board(create_board(result))
     
 
 def nqueens_initial_board(n):
-    return (-1,) * n  # Tuple of -1s, one for each row
+    return (-1,) * n  #Tuple of -1s, one for each row
 
 def n_queens_successors(state):
     n = len(state)
     successors = []
     
-    # Check if all queens are already placed
+    #Check if all queens are already placed
     if -1 not in state:
-        return successors  # No more successors as all queens are placed
+        return successors  #No more successors as all queens are placed
 
-    # Find the next row to place a queen
+    #Find the next row to place a queen
     next_row = state.index(-1)
     
     for col in range(n):
         if is_safe(state, next_row, col):
             new_state = list(state)
             new_state[next_row] = col
-            successors.append(tuple(new_state))  # Convert list back to tuple
+            successors.append(tuple(new_state))  #Convert list back to tuple
 
     return successors
 
@@ -572,7 +595,7 @@ def is_safe_state(state):
     #Now we check if the state is safe
     n = len(state)
     for row in range(n):
-        # Check if the queen in row r is attacking the queen we want to place
+        #Check if the queen in row r is attacking the queen we want to place
         if not is_safe(state, row, state[row]):
             #If the state is not safe, return False
             return False
