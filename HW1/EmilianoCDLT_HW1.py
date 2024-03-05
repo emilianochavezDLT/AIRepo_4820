@@ -2,6 +2,7 @@
 
 #source for deque and collections library: https://docs.python.org/3/library/collections.html#collections.deque
 from collections import deque
+import random
 
 
 
@@ -272,27 +273,38 @@ The goal state is:
  7 8 0 
 ''' 
 
-'''
 def nPuzzle(n, initial_board):
     # Create the goal state for an n-puzzle
     goal_board = [tuple(range(i*n + 1, (i+1)*n + 1)) for i in range(n)]
     goal_board[-1] = goal_board[-1][:-1] + (0,)  # Replace the last element of the last tuple with 0
     goal_board = tuple(goal_board)  # Convert the list of tuples to a tuple of tuples
+
     
+    print("Initial Board:", initial_board)
+    print("Goal Board:", goal_board)
+
+    # Run the search algorithms
     result = graphSearch(initial_board, goal_board, successors, 'bfs')
-    print("BFS Result: ", result)
+    print("BFS Result:", result)
     result = graphSearch(initial_board, goal_board, successors, 'dfs')
-    print("DFS Result: ", result)
+    print("DFS Result:", result)
     result = graphSearch(initial_board, goal_board, successors, 'id')
-    print("IDS Result: ", result)
+    print("IDS Result:", result)
     result = graphSearch(initial_board, goal_board, successors, 'bd')
-    print("BD Result: ", result)
+    print("BD Result:", result)
 
 
-initial_board = ((1, 2, 3), (4, 5, 6), (7, 8, 0))
-#rows               0th        1st         2nd
-nPuzzle(3, initial_board)
 '''
+initial_board = ((1, 2, 3), (0, 4, 5), (6, 7, 8))
+#rows               0th        1st         2nd
+'''
+#nPuzzle(3, initial_board)
+
+initial_board2 = ((1, 2, 0, 3), (4, 5, 6, 7), (8, 9, 10, 11), (12, 13, 14, 15))
+nPuzzle(4, initial_board2)
+
+
+
 
 ''' 
 ********************************************************************
@@ -394,7 +406,7 @@ def DFS_queens(inital_Node, goal_Node, successors):
     while stack: 
         node = stack.pop() #Pop the last element of the stack
 
-        if node == goal_Node:
+        if goal_Node(node):
             print_DFS_Cost(cost)
             return node
         
@@ -429,7 +441,7 @@ def DLS_queens(inital_Node, goal_Node, successors, depth):
     stack = deque([inital_Node]) #Create a stack with the inital_Node
     while stack:
         node = stack.pop() #Pop the last element of the stack and assign it to node
-        if node == goal_Node: #If the node is the goal_Node, return the node
+        if goal_Node(node): #If the node is the goal_Node, return the node
             print_IDS_Cost(cost)
             return node
         if depth == 0: #If the depth is 0, continue
@@ -450,6 +462,10 @@ def print_BD_Cost(cost):
 #Bidirectional Search
 #Pseudocode reference was from Russell and Norvig's book Pg. 91
 def BD_queens(initial_Node, goal_Node, successors):
+    cost = 0
+    print_BD_Cost(cost)
+    return(":( This one is a little tricky")
+
     cost = 0
     if initial_Node == goal_Node:
         print_BD_Cost(cost)
@@ -499,11 +515,11 @@ def nQueens(n, initial_state):
 
     result = graphSearch_queens(initial_state, is_goal_state, n_queens_successors, 'bfs')
     print("BFS Result: ", result)
-    result = graphSearch_queens(initial_state, True, n_queens_successors, 'dfs')
+    result = graphSearch_queens(initial_state, is_goal_state, n_queens_successors, 'dfs')
     print("DFS Result: ", result)
-    result = graphSearch_queens(initial_state, True, n_queens_successors, 'id')
+    result = graphSearch_queens(initial_state, is_goal_state, n_queens_successors, 'id')
     print("IDS Result: ", result)
-    result = graphSearch_queens(initial_state, True, n_queens_successors, 'bd')
+    result = graphSearch_queens(initial_state, is_goal_state, n_queens_successors, 'bd')
     print("BD Result: ", result)
     
 
@@ -532,9 +548,10 @@ def n_queens_successors(state):
 
 def is_safe(state, row, col):
     for r in range(row):
-        if state[r] == col or \
-           state[r] - r == col - row or \
-           state[r] + r == col + row:
+        # Check if the queen in row r is attacking the queen we want to place
+        # The check for the column is redundant as we are placing one queen in each row
+
+        if state[r] == col or state[r] - r == col - row or state[r] + r == col + row:
             return False
     return True
 
@@ -553,7 +570,7 @@ def is_safe_state(state):
 
 initial_board = nqueens_initial_board(4)
 
-nQueens(4, initial_board)
+nQueens(5, initial_board)
 
 '''
 ********************************************************************
