@@ -274,6 +274,7 @@ The goal state is:
 ''' 
 
 def nPuzzle(n, initial_board):
+    print("\n\n N_Puzzle Problem\n")
     # Create the goal state for an n-puzzle
     goal_board = [tuple(range(i*n + 1, (i+1)*n + 1)) for i in range(n)]
     goal_board[-1] = goal_board[-1][:-1] + (0,)  # Replace the last element of the last tuple with 0
@@ -294,13 +295,12 @@ def nPuzzle(n, initial_board):
     print("BD Result:", result)
 
 
-'''
-initial_board = ((1, 2, 3), (0, 4, 5), (6, 7, 8))
-#rows               0th        1st         2nd
-'''
-#nPuzzle(3, initial_board)
 
-initial_board2 = ((1, 2, 0, 3), (4, 5, 6, 7), (8, 9, 10, 11), (12, 13, 14, 15))
+initial_board = ((1, 2, 3), (4, 5, 6), (0, 7, 8))
+#rows               0th        1st         2nd
+nPuzzle(3, initial_board)
+
+initial_board2 = ((1, 2, 3, 4), (5, 6, 7, 8), (9, 10, 11, 12), (0, 13, 14, 15))
 nPuzzle(4, initial_board2)
 
 
@@ -364,6 +364,8 @@ def print_BFS_Cost(cost):
 #Pseudocode reference was from Russell and Norvig's book Pg. 82
 def BFS_queens(inital_Node, goal_state,successors):
     cost = 0
+
+    #This creates a check 
     if goal_state(inital_Node):
         print_BFS_Cost(cost)
         return inital_Node
@@ -373,7 +375,10 @@ def BFS_queens(inital_Node, goal_state,successors):
 
     while frontier:
         node = frontier.popleft()
+        #print("Node: ", node)
         
+        #print(goal_state(node))
+
         if goal_state(node):
             print_BFS_Cost(cost)
             return node
@@ -508,6 +513,7 @@ def BD_queens(initial_Node, goal_Node, successors):
 
 
 def nQueens(n, initial_state):
+    print("\n\n N_Queens Problem")
     if n == 1:
         return initial_state
     if n == 2 or n == 3:
@@ -549,28 +555,33 @@ def n_queens_successors(state):
 def is_safe(state, row, col):
     for r in range(row):
         # Check if the queen in row r is attacking the queen we want to place
-        # The check for the column is redundant as we are placing one queen in each row
-
         if state[r] == col or state[r] - r == col - row or state[r] + r == col + row:
             return False
     return True
 
 def is_goal_state(state):
-    """Check if all queens are placed and the state is safe."""
-    return -1 not in state and is_safe_state(state)
+    # Check if all queens are placed
+    all_queens_placed = -1 not in state
+    
+    #Now we check if the state is safe
+    state_is_safe = is_safe_state(state)
+    return all_queens_placed and state_is_safe
+    
 
 def is_safe_state(state):
-    """Check if the entire state is safe."""
+    #Now we check if the state is safe
     n = len(state)
     for row in range(n):
+        # Check if the queen in row r is attacking the queen we want to place
         if not is_safe(state, row, state[row]):
+            #If the state is not safe, return False
             return False
     return True
 
-
-initial_board = nqueens_initial_board(4)
-
-nQueens(5, initial_board)
+#N is the size of the board
+n = 4
+initial_board = nqueens_initial_board(n)
+nQueens(n, initial_board)
 
 '''
 ********************************************************************
