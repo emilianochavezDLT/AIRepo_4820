@@ -575,12 +575,15 @@ def n_queens_successors(state):
     return successors
 
 
+#Reference for is_safe function https://www.geeksforgeeks.org/n-queen-problem-backtracking-3/
+#Adapted to work with the n-queens problem
 def is_safe(state, row, col):
     for r in range(row):
         # Check if the queen in row r is attacking the queen we want to place
         if state[r] == col or state[r] - r == col - row or state[r] + r == col + row:
             return False
     return True
+
 
 def is_goal_state(state):
     # Check if all queens are placed
