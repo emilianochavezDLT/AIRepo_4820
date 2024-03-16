@@ -1,4 +1,22 @@
+'''
+Emiliano Chavez De La Torre
+CS 4820 AI
+Homework 2
+Solution to the N-Queens problem using the Hill Climbing algorithm,
+Gennetic Algorithm, and Particle Swarm Optimization.
+'''
 
+
+
+
+
+
+'''
+Below is a copy and paste of the code from the previous homework.
+This is my original code for the N-Queens problem.
+I will have to retrofit this code to work with the Hill Climbing algorithm, 
+Gennetic Algorithm, and Particle Swarm Optimization.
+'''
 def nQueens(n, initial_state):
     print("\n\n N_Queens Problem")
     if n == 1:
@@ -19,10 +37,16 @@ def nQueens(n, initial_state):
         for row in board:
             print(' '.join(row))
         print()
-    
-    
-    
 
+    create_board(initial_state)
+    print_board(create_board(initial_state))
+    
+    #Bellow is me calling the alogrithms to solve the N-Queens problem
+    print("\n\nHill Climbing Algorithm")
+    
+    
+    
+#This code initializes the board with -1s, one for each row
 def nqueens_initial_board(n):
     return (-1,) * n  #Tuple of -1s, one for each row
 
@@ -76,8 +100,9 @@ def is_safe_state(state):
     return True
 
 #N is the size of the board
-n = 4
+n = 4 #So this is a 4x4 board
 initial_board = nqueens_initial_board(n)
+print("Initial Board:", initial_board)
 nQueens(n, initial_board)
 
 '''
