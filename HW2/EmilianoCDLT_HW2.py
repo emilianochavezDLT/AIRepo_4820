@@ -7,6 +7,37 @@ Gennetic Algorithm, and Particle Swarm Optimization.
 '''
 
 
+#Hill Climbing Algorithm
+def hill_climbing(n, initial_state):
+    print("\n\nHill Climbing Algorithm")
+    current = initial_state
+    while True:
+        print("Current State:", current)
+        value = heuristic(current)
+        print("Heuristic Value:", value)
+        if value == 0:
+            return current
+        successors = n_queens_successors(current)
+        if not successors:
+            return current
+        next_state = min(successors, key=heuristic)
+        if heuristic(next_state) >= value:
+            return current
+        current = next_state
+
+def heuristic(state):
+    #This is the heuristic function that I will use for the N-Queens problem
+    #The heuristic value is the number of pairs of queens that are attacking each other
+    n = len(state)
+    attacks = 0
+    for i in range(n):
+        for j in range(i + 1, n):
+            if state[i] == state[j] or state[i] - i == state[j] - j or state[i] + i == state[j] + j:
+                attacks += 1
+    return attacks
+
+#Genetic Algorithm
+
 
 
 
@@ -43,6 +74,13 @@ def nQueens(n, initial_state):
     
     #Bellow is me calling the alogrithms to solve the N-Queens problem
     print("\n\nHill Climbing Algorithm")
+    returned_state = hill_climbing(n, initial_state)
+    print("Returned State:", returned_state)
+    print("Heuristic Value:", heuristic(returned_state))
+    print_board(create_board(returned_state))
+
+    print("\n\nGenetic Algorithm")
+    print("\n\nParticle Swarm Optimization")
     
     
     
