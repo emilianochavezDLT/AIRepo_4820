@@ -98,28 +98,24 @@ def heuristic_based_on_saftey(state):
 
 #Here, Im just going to pass in n to specify the size of the board
 def genetic_algorithm(n):
-    max_generations = 1000
+    max_generations = 10000
 
     print("\n\nGenetic Algorithm")
     population = genetic_algorithm_initial_population(n)
     
     for generation in range(max_generations):
         print("Generation:", generation)
-        fitness_values = {
-            individual: fitness_fn(individual) for individual in population
-        }
-        parents = selection(population, fitness_values)
-        print("Parents:", parents)
+        parents = selection(population, fitness_fn)
         x, y = parents
+        print("Parents:", x, y)
         child = reproduce(x, y)
         if random.random() < 0.1:
             child = mutate(child)
         population.append(child)
-        print("Population:", population)
         if fitness_fn(child) == 1:
-            print("Solution Found:", child)
+            print("Solution Found:", child, "in", generation, "generations")
             return child
-    print("No solution found")
+    print("No solution found in", max_generations, "generations")
     return None
 
 
@@ -173,11 +169,11 @@ def mutate(individual):
 
 #Selection Function
 #This function will select the best individuals to be parents
-def selection(population, fitness_values):
-    #Sort the population by fitness value
-    sorted_population = sorted(population, key=lambda individual: fitness_values[individual], reverse=True)
-    #Select the best individuals to be parents
-    parents = sorted_population[:2]
+def selection(population, fitness_function):
+    fitness = [fitness_function(individual) for individual in population]
+    x = random.choices(population, weights=fitness, k=1)[0]
+    y = random.choices(population, weights=fitness, k=1)[0]
+    parents = (x, y)
     return parents
     
     
