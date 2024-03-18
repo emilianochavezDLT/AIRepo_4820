@@ -99,21 +99,20 @@ def heuristic_based_on_saftey(state):
 #Here, Im just going to pass in n to specify the size of the board
 def genetic_algorithm(n):
     max_generations = 10000
-
-    print("\n\nGenetic Algorithm")
     population = genetic_algorithm_initial_population(n)
     
     for generation in range(max_generations):
-        print("Generation:", generation)
+        #print("Generation:", generation)
         parents = selection(population, fitness_fn)
         x, y = parents
-        print("Parents:", x, y)
         child = reproduce(x, y)
         if random.random() < 0.1:
             child = mutate(child)
         population.append(child)
         if fitness_fn(child) == 1:
             print("Solution Found:", child, "in", generation, "generations")
+            child_board = create_board(child)
+            print_board(child_board)
             return child
     print("No solution found in", max_generations, "generations")
     return None
@@ -126,7 +125,6 @@ def genetic_algorithm(n):
 #This will create an initial population of 10 individuals
 #It will retturn a list of tuples, where each tuple is a permutation of column positions
 def genetic_algorithm_initial_population(n):
-    print("\n\nGenetic Algorithm Initial Population")
     population = []
     for i in range(10):  #Population size of 10
         #Generate a random permutation of column positions
@@ -319,7 +317,9 @@ Main Function Being Called to Solve the N-Queens Problem
 #N is the size of the board
 n = 4 #So this is a 4x4 board
 initial_board = nqueens_initial_board(n)
-print("Initial Board:", initial_board)
+print("Initial Board:")
+created_board = create_board(initial_board)
+print_board(created_board)
 nQueens(n, initial_board)
 
 
