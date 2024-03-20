@@ -174,14 +174,72 @@ def selection(population, fitness_function):
     parents = (x, y)
     return parents
     
-    
-    
 
 
+#Particle Swarm Optimization
 
+'''
+First I will create a class for the Particle Swarm Optimization.
+The first class will be the Particle class
+It seems easier to impelemnt this way and it will be easier to understand the code.
+This is my best way to translate the matlab code to python.
+'''
 
+class Particle:
+    def __init__(self, n):
+        self.position = [random.randint(0, n-1) for _ in range(n)]
+        self.velocity = [0 for _ in range(n)]
+        self.fitness = float('inf')
+        self.pbest_position = self.position.copy()
+        self.pbest_value = float('inf')
 
+def initialize_swarm(num_particles, n):
+    return [Particle(n) for _ in range(num_particles)]
 
+def evaluate_fitness(particle, n):
+    # Fitness function for n-queens
+    # A higher fitness value indicates a better solution
+    pass  # To be implemented
+
+def update_velocity(particle, gbest_position, w, c1, c2):
+    # Update velocity based on particle's and gbest's positions
+    pass  # To be implemented
+
+def update_position(particle, n):
+    # Update particle's position and ensure it remains within bounds
+    pass  # To be implemented
+
+def update_pbest(particle):
+    if particle.fitness < particle.pbest_value:
+        particle.pbest_position = particle.position.copy()
+        particle.pbest_value = particle.fitness
+
+def update_gbest(swarm, gbest):
+    for particle in swarm:
+        if particle.pbest_value < gbest.fitness:
+            gbest.position = particle.pbest_position.copy()
+            gbest.fitness = particle.pbest_value
+
+def pso(n):
+    num_particles = 10
+    max_iterations = 100
+    swarm = initialize_swarm(num_particles, n)
+    gbest = Particle(n)  # Global best
+    gbest.fitness = float('-inf')
+
+    for iteration in range(max_iterations):
+        for particle in swarm:
+            particle.fitness = evaluate_fitness(particle, n)
+            update_pbest(particle)
+        update_gbest(swarm, gbest)
+
+        for particle in swarm:
+            update_velocity(particle, gbest.position, w=0.5, c1=1, c2=1)
+            update_position(particle, n)
+
+        # print(f'Iteration {iteration}: Best Fitness = {gbest.fitness}')
+
+    return gbest.position, gbest.fitness
 
 
 
@@ -203,13 +261,12 @@ def nQueens(n, initial_state):
     print("\n\nHill Climbing Algorithm")
     hill_climbing(initial_state)
     '''
-
+    '''
     print("\n\nGenetic Algorithm")
     genetic_algorithm(n)
-
-
-
+    '''
     print("\n\nParticle Swarm Optimization")
+    pso_alg(n)
     
     
     
