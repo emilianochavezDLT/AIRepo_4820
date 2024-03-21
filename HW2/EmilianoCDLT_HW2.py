@@ -182,7 +182,7 @@ def selection(population, fitness_function):
 First I will create a class for the Particle Swarm Optimization.
 The first class will be the Particle class
 It seems easier to impelemnt this way and it will be easier to understand the code.
-This is my best way to translate the matlab code to python.
+This is my best way to translate the matlab code given in class to python.
 '''
 
 class Particle:
@@ -196,60 +196,82 @@ class Particle:
 def initialize_swarm(num_particles, n):
     return [Particle(n) for _ in range(num_particles)]
 
+#This function will evaluate the fitness of the particle
 def evaluate_fitness(particle, n):
+    #Calculate the number of conflicts
     row_conflicts = len(particle.position) - len(set(particle.position))
     diagonal_conflicts = 0
     for i in range(n):
         for j in range(i+1, n):
+            #Check if the queens are on the same diagonal
             if abs(particle.position[i] - particle.position[j]) == j - i:
-                diagonal_conflicts += 1
+                diagonal_conflicts += 1 #Increment the diagonal conflicts
     return row_conflicts + diagonal_conflicts
 
+#This function will update the velocity of the particle
 def update_velocity(particle, gbest_position, w, c1, c2):
     for i in range(len(particle.position)):
+        #Update the velocity of the particle
         social = c1 * random.random() * (gbest_position[i] - particle.position[i])
+        #Update the velocity of the particle
         cognitive = c2 * random.random() * (particle.pbest_position[i] - particle.position[i])
+        #Update the velocity
         particle.velocity[i] = w * particle.velocity[i] + social + cognitive
 
-
+#This function will update the position of the particle
 def update_position(particle, n):
+    #Update the position of the particle
     for i in range(len(particle.position)):
         if random.random() < abs(particle.velocity[i]):
+            #Shift the position of the particle
             shift = 1 if particle.velocity[i] > 0 else -1
+            #Update the position
             particle.position[i] = (particle.position[i] + shift) % n
 
-
+#This function will update the personal best
 def update_pbest(particle):
+    #Check if the particle's fitness is better than its personal best
     if particle.fitness < particle.pbest_value:
+        #Update the personal best
         particle.pbest_position = particle.position.copy()
         particle.pbest_value = particle.fitness
 
+#This function will update the global best
 def update_gbest(swarm, gbest):
     for particle in swarm:
+        #Check if the particle's personal best is better than the global best
         if particle.pbest_value < gbest.fitness:
+            #Update the global best
             gbest.position = particle.pbest_position.copy()
+            #Update the global best fitness value
             gbest.fitness = particle.pbest_value
 
 def pso(n):
-    num_particles = 1000
+    num_particles = 100
     max_iterations = 10000
     swarm = initialize_swarm(num_particles, n)
-    gbest = Particle(n)  # Global best
+    gbest = Particle(n)  #Global best
     gbest.fitness = float('inf')
+
 
     for iteration in range(max_iterations):
         for particle in swarm:
+            #Evaluate fitness
             particle.fitness = evaluate_fitness(particle, n)
+            #Update personal best
             update_pbest(particle)
         update_gbest(swarm, gbest)
 
         for particle in swarm:
+            #Update velocity and position
             update_velocity(particle, gbest.position, w=0.5, c1=1, c2=1)
+            #Update position
             update_position(particle, n)
 
-        #print(f'Iteration {iteration}: Best Fitness = {gbest.fitness}')
+        #Check if solution is found
         if gbest.fitness == 0:
             print(f'Solution Found: {gbest.position} in {iteration} iterations')
+            #Print the board
             gbest_board = create_board(gbest.position)
             print_board(gbest_board)
             return gbest.position, gbest.fitness
@@ -273,15 +295,15 @@ def nQueens(n, initial_state):
     if n == 2 or n == 3:
         print("No solution exists")
 
-    '''
+    
     #Bellow is me calling the alogrithms to solve the N-Queens problem
     print("\n\nHill Climbing Algorithm")
     hill_climbing(initial_state)
-    '''
-    '''
+    
+    
     print("\n\nGenetic Algorithm")
     genetic_algorithm(n)
-    '''
+    
     print("\n\nParticle Swarm Optimization")
     pso(n)
     
