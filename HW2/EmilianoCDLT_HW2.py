@@ -197,17 +197,27 @@ def initialize_swarm(num_particles, n):
     return [Particle(n) for _ in range(num_particles)]
 
 def evaluate_fitness(particle, n):
-    # Fitness function for n-queens
-    # A higher fitness value indicates a better solution
-    pass  # To be implemented
+    row_conflicts = len(particle.position) - len(set(particle.position))
+    diagonal_conflicts = 0
+    for i in range(n):
+        for j in range(i+1, n):
+            if abs(particle.position[i] - particle.position[j]) == j - i:
+                diagonal_conflicts += 1
+    return row_conflicts + diagonal_conflicts
 
 def update_velocity(particle, gbest_position, w, c1, c2):
-    # Update velocity based on particle's and gbest's positions
-    pass  # To be implemented
+    for i in range(len(particle.position)):
+        social = c1 * random.random() * (gbest_position[i] - particle.position[i])
+        cognitive = c2 * random.random() * (particle.pbest_position[i] - particle.position[i])
+        particle.velocity[i] = w * particle.velocity[i] + social + cognitive
+
 
 def update_position(particle, n):
-    # Update particle's position and ensure it remains within bounds
-    pass  # To be implemented
+    for i in range(len(particle.position)):
+        if random.random() < abs(particle.velocity[i]):
+            shift = 1 if particle.velocity[i] > 0 else -1
+            particle.position[i] = (particle.position[i] + shift) % n
+
 
 def update_pbest(particle):
     if particle.fitness < particle.pbest_value:
@@ -221,11 +231,11 @@ def update_gbest(swarm, gbest):
             gbest.fitness = particle.pbest_value
 
 def pso(n):
-    num_particles = 10
-    max_iterations = 100
+    num_particles = 1000
+    max_iterations = 10000
     swarm = initialize_swarm(num_particles, n)
     gbest = Particle(n)  # Global best
-    gbest.fitness = float('-inf')
+    gbest.fitness = float('inf')
 
     for iteration in range(max_iterations):
         for particle in swarm:
@@ -237,9 +247,16 @@ def pso(n):
             update_velocity(particle, gbest.position, w=0.5, c1=1, c2=1)
             update_position(particle, n)
 
-        # print(f'Iteration {iteration}: Best Fitness = {gbest.fitness}')
+        #print(f'Iteration {iteration}: Best Fitness = {gbest.fitness}')
+        if gbest.fitness == 0:
+            print(f'Solution Found: {gbest.position} in {iteration} iterations')
+            gbest_board = create_board(gbest.position)
+            print_board(gbest_board)
+            return gbest.position, gbest.fitness
+        
+    print(f'No solution found in {max_iterations} iterations')
 
-    return gbest.position, gbest.fitness
+    return None
 
 
 
@@ -266,7 +283,7 @@ def nQueens(n, initial_state):
     genetic_algorithm(n)
     '''
     print("\n\nParticle Swarm Optimization")
-    pso_alg(n)
+    pso(n)
     
     
     
